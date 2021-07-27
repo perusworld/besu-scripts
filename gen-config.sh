@@ -62,11 +62,15 @@ tempConfigFile=$outputDir/temp-config.json
 allNodeNames=(validator1 validator2 validator3 validator4 rpcnode member1 member2 member3)
 validatorNodeNames=(validator1 validator2 validator3 validator4)
 memberNodeNames=(rpcnode member1 member2 member3)
+kvalidatorNodeNames=(validator-0 validator-1 validator-2 validator-3)
+kmemberNodeNames=(member-0 member-1 member-2)
 
 
 case $nodeNameType in
     validators) nodeNames=(${validatorNodeNames[*]});;
     members) nodeNames=(${memberNodeNames[*]});;
+    kvalidators) nodeNames=(${kvalidatorNodeNames[*]});;
+    kmembers) nodeNames=(${kmemberNodeNames[*]});;
     *) nodeNames=(${allNodeNames[*]});;
 esac
 nodeLen="${#nodeNames[@]}"
