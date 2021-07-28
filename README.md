@@ -29,7 +29,18 @@ Then copy the generated config and keys. And then run again
 ```bash
 ./generate-config.sh  -n members
 ```
-THis time just copy the member node keys and use the config from the first run. This was the validators are only encoded in the extra data.
+This time just copy the member node keys and use the config from the first run. This was the validators are only encoded in the extra data.
+
+#### There is another set of options to create keys and config used in [quorum-kubernetes - ibft2-tls-r1](https://github.com/perusworld/quorum-kubernetes/tree/master/helm/quorum-besu/ibft2-tls-r1). 
+```bash
+./generate-config.sh  -n kvalidators
+```
+Then copy the generated config and keys. And then run again
+```bash
+./generate-config.sh  -n kmembers
+```
+Copy the relevant files from the generated folder to ./besu/config/ and ./besu/config/networkFiles folder.
+
 ## Key/Cert Gen Scripts
 There are a couple of key gen scripts in here. They generate the keys in **./generated/keys** and the corresponding exported version of the keys in **./generated/export**. As of now 3 types of keystore are exported using a combination of openssl, keytool and certutil
 * jks
@@ -45,5 +56,14 @@ This script is used to generate the keys used in [quorum-dev-quickstart - addon_
 This script is used to generate the keys used in the [Besu - PKI Module Test Cases](https://github.com/hyperledger/besu/tree/master/pki). Copy the contents of the aove mentioned export folder to ./pki/src/test/resources/keystore/ folder in besu.
 
 ### [gen-at-keys.sh](gen-at-keys.sh)
-This script is used to generate the keys used in the [Besu - Acceptance Test Cases](https://github.com/perusworld/besu/tree/master/acceptance-tests). Copy the contents of the aove mentioned export folder to ./tests/src/test/resources/p2p-tls/ folder in besu.
+This script is used to generate the keys used in the [Besu - Acceptance Test Cases](https://github.com/perusworld/besu/tree/master/acceptance-tests). Copy the contents of the above mentioned export folder to ./tests/src/test/resources/p2p-tls/ folder in besu.
+
+### [gen-k-keys.sh](gen-k-keys.sh)
+This script is used to generate the keys used in the [quorum-kubernetes - ibft2-tls-r1](https://github.com/perusworld/quorum-kubernetes/tree/master/helm/quorum-besu/ibft2-tls-r1). Copy the contents of the above mentioned export folder to ./besu/config/p2p-tls folder.
+Also because of config map max size issue, you might want to clean up unused files there. Run something like the below in that folder.
+```bash
+find . -name '*.p12' -exec rm -- '{}' +
+find . -name 'nss.cfg' -exec rm -- '{}' +
+find . -name 'nssdb' -exec rm -r -- '{}' +
+```
 
