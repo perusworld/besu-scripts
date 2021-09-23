@@ -66,4 +66,5 @@ find . -name '*.p12' -exec rm -- '{}' +
 find . -name 'nss.cfg' -exec rm -- '{}' +
 find . -name 'nssdb' -exec rm -r -- '{}' +
 ```
-
+### [gen-r1.sh](gen-r1.sh)
+This script is used to generate a SECP256r1 key-pair that can be used as a besu wallet or node address with the right configurations. 
