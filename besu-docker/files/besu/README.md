@@ -35,7 +35,7 @@ To run these tutorials, you must have the following installed:
 
 Change directory to the artifacts folder: 
 
-`cd quorum-test-network` (default folder location) 
+`cd besu-test-network` (default folder location) 
  
 **To start services and the network:**
 

@@ -63,10 +63,10 @@ if [ $rm_image == "-rmi" ]; then
     docker image rm quorumengineering/cakeshop:${QUORUM_CAKESHOP_VERSION}
   fi
   if grep -q 'kibana:' docker-compose.yml 2> /dev/null ; then
-    docker image rm quorum-test-network_elasticsearch
-    docker image rm quorum-test-network_logstash
-    docker image rm quorum-test-network_filebeat
-    docker image rm quorum-test-network_metricbeat
+    docker image rm besu-test-network_elasticsearch
+    docker image rm besu-test-network_logstash
+    docker image rm besu-test-network_filebeat
+    docker image rm besu-test-network_metricbeat
   fi
 else
   echo "Skipping image removal"

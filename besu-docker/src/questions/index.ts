@@ -7,13 +7,13 @@ export const outputDirQuestion: QuestionTree = {
     name: "outputPath",
     prompt: "Where should we create the config files for this network? Please\n" +
  "choose either an empty directory, or a path to a new directory that does\n" +
-    "not yet exist. Default: ./quorum-test-network",
+    "not yet exist. Default: ./besu-test-network",
     transformerValidator: (rawInput: string, answers: AnswerMap) => {
         // TODO: add some more checks to make sure that the path is valid
         if (rawInput) {
             answers.outputPath = rawInput;
         } else {
-            answers.outputPath = "./quorum-test-network";
+            answers.outputPath = "./besu-test-network";
         }
 
         try {

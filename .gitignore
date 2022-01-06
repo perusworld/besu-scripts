@@ -9,5 +9,5 @@ build
 logs/
 /volumes/
 .DS_Store
-besu-test-network/*
-besu-test-network-*/*
+besu-test-network-*
+besu-test-network
