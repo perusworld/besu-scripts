@@ -34,7 +34,7 @@ genesisNoExtraDataFile=genesis-ne.json
 blankEncodeJSONFile=./config/blankEncode.json
 
 configFile=./config/r1ibftConfigFile.json
-besuBin=/home/perusworld/works/open/contrib/besu/build/install/besu/bin/besu
+besuBin=/home/perusworld/works/open/contrib/besu/build/docker-besu/besu/bin/besu
 nodeNameType=all
 
 print_usage() {
@@ -64,6 +64,8 @@ validatorNodeNames=(validator1 validator2 validator3 validator4)
 memberNodeNames=(rpcnode member1 member2 member3)
 kvalidatorNodeNames=(validator-0 validator-1 validator-2 validator-3)
 kmemberNodeNames=(member-0 member-1 member-2)
+k0validatorNodeNames=(validator-0-0 validator-1-0 validator-2-0 validator-3-0)
+k0memberNodeNames=(member-0-0 member-1-0 member-2-0)
 
 
 case $nodeNameType in
@@ -71,6 +73,8 @@ case $nodeNameType in
     members) nodeNames=(${memberNodeNames[*]});;
     kvalidators) nodeNames=(${kvalidatorNodeNames[*]});;
     kmembers) nodeNames=(${kmemberNodeNames[*]});;
+    k0validators) nodeNames=(${k0validatorNodeNames[*]});;
+    k0members) nodeNames=(${k0memberNodeNames[*]});;
     *) nodeNames=(${allNodeNames[*]});;
 esac
 nodeLen="${#nodeNames[@]}"
