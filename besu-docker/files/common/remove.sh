@@ -35,10 +35,10 @@ if [ -f "docker-compose-deps.yml" ]; then
     docker-compose rm -sfv
 fi
 # pet shop dapp
-if [[ ! -z `docker ps -a | grep quorum-dev-quickstart_pet_shop` ]]; then
-  docker stop quorum-dev-quickstart_pet_shop
-  docker rm quorum-dev-quickstart_pet_shop
-  removeDockerImage quorum-dev-quickstart_pet_shop
+if [[ ! -z `docker ps -a | grep besu-dev-quickstart_pet_shop` ]]; then
+  docker stop besu-dev-quickstart_pet_shop
+  docker rm besu-dev-quickstart_pet_shop
+  removeDockerImage besu-dev-quickstart_pet_shop
 fi
 
 rm_image=${1:-nrmi}

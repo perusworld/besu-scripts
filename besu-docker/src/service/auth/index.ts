@@ -12,7 +12,7 @@ const defaultKCConfig: ExtendedKeycloakConfig = {
     "realm": "quorum",
     "auth-server-url": "https://quorum-auth.quorum.consensys.net/auth/",
     "ssl-required": "external",
-    "resource": "quorum-dev-quickstart",
+    "resource": "besu-dev-quickstart",
     "public-client": true,
     "confidential-port": 0
   };

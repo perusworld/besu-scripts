@@ -20,6 +20,6 @@ truffle compile
 truffle migrate --network quickstartWallet
 truffle test --network quickstartWallet
 
-docker build . -t quorum-dev-quickstart_pet_shop
-docker run -p 3001:3001 --name quorum-dev-quickstart_pet_shop --detach quorum-dev-quickstart_pet_shop
+docker build . -t besu-dev-quickstart_pet_shop
+docker run -p 3001:3001 --name besu-dev-quickstart_pet_shop --detach besu-dev-quickstart_pet_shop
 

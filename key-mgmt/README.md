@@ -15,7 +15,7 @@ sudo apt install libnss3-tools
 
 ## Besu Genesis Blockchain Config and Node Keys File Generation 
 ### [gen-config.sh](gen-config.sh)
-This script is used to generate Besu blockchain genesis and node keys files used in [quorum-dev-quickstart - addon_features_tls](https://github.com/perusworld/quorum-dev-quickstart/tree/addon_features_tls). Copy the contents of the above mentioned export folder to ./files/besu/config/besu/p2p-tls folder in quorum-dev-quickstart.
+This script is used to generate Besu blockchain genesis and node keys files using tls. Copy the contents of the above mentioned export folder to ./files/besu/config/besu/p2p-tls folder in besu-dev-quickstart.
 
 If you run the script without any arguments it should print the usage formats. all of them are optional but tend to look for presence of the besu binary and the config to use to generate the keys. The configuration is generated in the **./generated/generated-config** folder.
 
@@ -50,10 +50,10 @@ There are a couple of key gen scripts in here. They generate the keys in **./gen
 Most of the common functions are in [common.sh](common.sh), One can include that in their own scripts to customise the key generation.
 
 ### [gen-keys.sh](gen-keys.sh)
-This script is used to generate the keys used in [quorum-dev-quickstart - addon_features_tls](https://github.com/perusworld/quorum-dev-quickstart/tree/addon_features_tls). Copy the contents of the aove mentioned export folder to ./files/besu/config/besu/p2p-tls folder in quorum-dev-quickstart.
+This script is used to generate the keys with tls. Copy the contents of the above mentioned export folder to ./files/besu/config/besu/p2p-tls folder in besu-dev-quickstart.
 
 ### [gen-test-keys.sh](gen-test-keys.sh)
-This script is used to generate the keys used in the [Besu - PKI Module Test Cases](https://github.com/hyperledger/besu/tree/master/pki). Copy the contents of the aove mentioned export folder to ./pki/src/test/resources/keystore/ folder in besu.
+This script is used to generate the keys used in the [Besu - PKI Module Test Cases](https://github.com/hyperledger/besu/tree/master/pki). Copy the contents of the above mentioned export folder to ./pki/src/test/resources/keystore/ folder in besu.
 
 ### [gen-at-keys.sh](gen-at-keys.sh)
 This script is used to generate the keys used in the [Besu - Acceptance Test Cases](https://github.com/perusworld/besu/tree/master/acceptance-tests). Copy the contents of the above mentioned export folder to ./tests/src/test/resources/p2p-tls/ folder in besu.

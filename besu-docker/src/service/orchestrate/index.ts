@@ -32,7 +32,7 @@ export async function installOrchestrateImages(): Promise<void> {
 
     try {
 
-        const tmpDirDesc = tmp.dirSync({ prefix: "quorum-dev-quickstart" });
+        const tmpDirDesc = tmp.dirSync({ prefix: "besu-dev-quickstart" });
 
         const tmpDir = tmpDirDesc.name;
 

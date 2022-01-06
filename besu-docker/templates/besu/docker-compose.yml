@@ -314,7 +314,7 @@ services:
   splunk:
     << : *splunk-def
     networks:
-      quorum-dev-quickstart:
+      besu-dev-quickstart:
 {% if not enableDNS %}
         ipv4_address: 172.16.239.34
 {% endif %}
@@ -323,7 +323,7 @@ services:
     << : *otelcollector-def
     << : *docker-logging
     networks:
-      quorum-dev-quickstart:
+      besu-dev-quickstart:
 {% if not enableDNS %}
         ipv4_address: 172.16.239.35
 {% endif %}
@@ -332,7 +332,7 @@ services:
     << : *ethlogger-def
     << : *docker-logging
     networks:
-      quorum-dev-quickstart:
+      besu-dev-quickstart:
 {% if not enableDNS %}
         ipv4_address: 172.16.239.36
 {% endif %}
@@ -348,7 +348,7 @@ services:
     command:
       - --docker_only=true
     networks:
-      quorum-dev-quickstart:
+      besu-dev-quickstart:
 {% if not enableDNS %}
         ipv4_address: 172.16.239.37
 {% endif %}
