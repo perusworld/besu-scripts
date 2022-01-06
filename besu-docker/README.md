@@ -1,4 +1,4 @@
-# Besu Dev Quickstart - with support for more configurations!
+# Besu Docker Dev Quickstart - with support for more configurations!
 
 This derives most of the scripts from [quorum-dev-quickstart](https://github.com/ConsenSys/quorum-dev-quickstart) with added support for specifying a config file as an optional argument to refine the kind of network that is created. This is primarily geared towards Besu customisations will look at porting the same to GoQuorum later. Look at the (example: [default.json](./config/default.json)) for config options.
 

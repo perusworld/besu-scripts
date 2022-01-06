@@ -1,0 +1,22 @@
+image:
+  # repository: busybox
+  # tag: latest
+  repository: hyperledger/besu
+  tag: 22.1.0-RC2-SNAPSHOT-openjdk-11
+  pullPolicy: Always
+
+
+node:
+  replicaCount: 4
+  p2p:
+    port: 30303
+  rpc:
+    port: 8545
+  ws:
+    port: 8546
+  graphql:
+    port: 8547
+  metrics:
+    port: 9545
+  metricsPush:
+    port: 9091

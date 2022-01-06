@@ -1,0 +1,55 @@
+logging="DEBUG"
+data-path="/data"
+host-whitelist=["*"]
+
+# rpc
+rpc-http-enabled=true
+rpc-http-host="0.0.0.0"
+rpc-http-port=8545
+rpc-http-cors-origins=["*"]
+
+# ws
+rpc-ws-enabled=true
+rpc-ws-host="0.0.0.0"
+rpc-ws-port=8546
+
+# graphql
+graphql-http-enabled=true
+graphql-http-host="0.0.0.0"
+graphql-http-port=8547
+graphql-http-cors-origins=["*"]
+
+# metrics
+metrics-enabled=true
+metrics-host="0.0.0.0"
+metrics-port=9545
+
+# permissions
+permissions-nodes-config-file-enabled=false
+
+# static nodes
+static-nodes-file="/usr/share/config/static-nodes.json"
+
+# p2p discovery
+discovery-enabled=false
+
+# dns
+Xdns-enabled=true
+Xdns-update-enabled=true
+
+min-gas-price=0
+
+nat-method="KUBERNETES"
+
+Xp2p-tls-enabled=true
+Xp2p-tls-keystore-type="JKS"
+Xp2p-tls-keystore-file="/usr/share/config/p2p-tls/keystore.jks"
+Xp2p-tls-keystore-password-file="/usr/share/config/p2p-tls/nsspin.txt"
+Xp2p-tls-truststore-type="JKS"
+Xp2p-tls-truststore-file="/usr/share/config/p2p-tls/truststore.jks"
+Xp2p-tls-truststore-password-file="/usr/share/config/p2p-tls/nsspin.txt"
+
+genesis-file="/usr/share/config/genesis.json"
+node-private-key-file="/usr/share/config/node-keys/key"
+
+Xnat-kube-service-name="default"

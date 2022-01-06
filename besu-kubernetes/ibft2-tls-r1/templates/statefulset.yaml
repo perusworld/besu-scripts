@@ -1,0 +1,132 @@
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: {{ .Release.Name }}-sa
+  namespace: {{ .Release.Namespace }}
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: {{ .Release.Name }}-role
+  namespace: {{ .Release.Namespace }}
+rules:
+- apiGroups: [""]
+  resources: ["services"]
+  verbs: ["get", "list"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: {{ .Release.Name }}-rb
+  namespace: {{ .Release.Namespace }}
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: {{ .Release.Name }}-role
+subjects:
+- kind: ServiceAccount
+  name: {{ .Release.Name }}-sa
+  namespace: {{ .Release.Namespace }}
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ .Release.Name }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: {{ template "besu.name" . }}
+spec:
+  replicas: {{ .Values.node.replicaCount }}
+  podManagementPolicy: OrderedReady
+  selector:
+    matchLabels:
+      app: {{ template "besu.name" . }}
+  serviceName: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app: {{ template "besu.name" . }}
+    spec:
+      serviceAccountName: {{ .Release.Name }}-sa
+      initContainers:
+        - name: map-config
+          image: alpine:3.6
+          imagePullPolicy: IfNotPresent
+          volumeMounts:
+            - name: app-config
+              mountPath: /usr/share/config
+          {{ range $path, $bytes := .Files.Glob "config/***" }}
+          {{ $name := base $path }}
+            - name: {{ $.Release.Name }}-config-volume
+              mountPath: {{ printf "/config%s/%s" (index (regexSplit "config" (dir $path) -1) 1) $name | indent 2 }}
+              subPath: {{- sha256sum (printf "%s/%s" (index (regexSplit "config" (dir $path) -1) 1 ) $name ) | indent 2 }}
+          {{ end }}
+          command:
+            - /bin/sh
+            - -c
+          args:
+            - |
+                ln -s /config/networkFiles/$HOSTNAME/keys /usr/share/config/node-keys && \
+                ln -s /config/p2p-tls/$HOSTNAME /usr/share/config/p2p-tls && \
+                ln -s /config/config.toml /usr/share/config/config.toml && \
+                ln -s /config/log-config.xml /usr/share/config/log-config.xml && \
+                ln -s /config/genesis.json /usr/share/config/genesis.json && \
+                ln -s /config/static-nodes.json /usr/share/config/static-nodes.json
+
+      containers:
+        - name: {{ .Release.Name }}
+          image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          volumeMounts:
+            - name: data
+              mountPath: /data
+            - name: app-config
+              mountPath: /usr/share/config
+          {{ range $path, $bytes := .Files.Glob "config/***" }}
+          {{ $name := base $path }}
+            - name: {{ $.Release.Name }}-config-volume
+              mountPath: {{ printf "/config%s/%s" (index (regexSplit "config" (dir $path) -1) 1) $name | indent 2 }}
+              subPath: {{- sha256sum (printf "%s/%s" (index (regexSplit "config" (dir $path) -1) 1 ) $name ) | indent 2 }}
+          {{ end }}
+          ports:
+            - name: json-rpc
+              containerPort: {{ .Values.node.rpc.port }}
+              protocol: TCP
+            - name: ws
+              containerPort: {{ .Values.node.ws.port }}
+              protocol: TCP
+            - name: graphql
+              containerPort: {{ .Values.node.graphql.port }}
+              protocol: TCP
+            - name: rlpx
+              containerPort: {{ .Values.node.p2p.port }}
+              protocol: TCP
+            - name: discovery
+              containerPort: {{ .Values.node.p2p.port }}
+              protocol: UDP
+            - name: metrics
+              containerPort: {{ .Values.node.metrics.port }}
+              protocol: TCP
+          command:
+            - /bin/sh
+            - -c
+          args:
+            - |
+              exec /opt/besu/bin/besu \
+                --config-file=/usr/share/config/config.toml \
+                --Xnat-kube-service-name={{ .Release.Name }}
+          livenessProbe:
+            httpGet:
+              path: /liveness
+              port: 8545
+            initialDelaySeconds: 60
+            periodSeconds: 30
+      volumes:
+        - name: app-config
+          emptyDir: { }
+        - name: data
+          emptyDir: { }
+        - name: {{ $.Release.Name }}-config-volume
+          configMap:
+            name: {{ $.Release.Name }}-configmap-files
