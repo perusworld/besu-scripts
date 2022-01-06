@@ -1,1 +1,13 @@
 generated/
+.idea/
+*.iml
+*.lock
+*.log
+node_modules
+.vscode
+build
+logs/
+/volumes/
+.DS_Store
+besu-test-network/*
+besu-test-network-*/*

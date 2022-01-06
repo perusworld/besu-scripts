@@ -1,0 +1,4 @@
+[Users.member1user]
+password = "$2a$10$q1IXY1B9ztHtALwKBGD3vOZ7hj1bYbCEOz/OjKlXYfLm5.ejeoiZm"
+permissions=["*:*"]
+privacyPublicKey="A1aVtMxLCUHmBVHXoZzzBgPbW/wj5axDpW9X8l91SGo="

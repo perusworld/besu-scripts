@@ -1,0 +1,67 @@
+{
+  "clientType": "besu",
+  "orchestrate": false,
+  "privacy": false,
+  "p2pSSL": true,
+  "monitoring": "none",
+  "enableStaticNodes": true,
+  "enableBootNodes": false,
+  "enableETHSignerProxy": false,
+  "enableP2PDiscovery": false,
+  "enableNodePermissions": false,
+  "enableDNS": true,
+  "besuConsAlgo": "ribft2",
+  "besuConsApi": "IBFT",
+  "enableMiner": false,
+  "minerCoinbase": "fe3b557e8fb62b89f4916b721be55ceb828dbd73",
+  "minGasPrice": 0,
+  "privacyOnchainGroupsEnabled": false,
+  "privacyNodePort": 9101,
+  "metrics": false,
+  "defaultNetwork": "quorum-dev-quickstart",
+  "besuVersion": "22.1.0-RC2-SNAPSHOT-openjdk-11",
+  "besuNetworkFiles": "rnetworkFiles",
+  "nodeConfig":[
+    {
+      "name":"validator1",
+      "ip":"172.16.239.11",
+      "type":"validator",
+      "roles":["validator"],
+      "boot":true,
+      "networks": [
+        "quorum-dev-quickstart"
+      ],
+      "publicKey":"11da9970aba33b9b3a14c6be2a4c6bc0633618fb29bf52b28ced37ae13c9865022499851638b7892d47f4730059d1ba03d4834830a15c46476ba8aa49a6f63ba"
+    },
+    {
+      "name":"validator2",
+      "ip":"172.16.239.12",
+      "type":"validator",
+      "roles":["validator"],
+      "networks": [
+        "quorum-dev-quickstart"
+      ],
+      "publicKey":"0005bd157c662fe9cf4008f99fc675cbeb7e0297643a857c7f84654b7749d3494e801a34a28cfbccc5b1ae5a3e157f4e64eac4622b8245cd6edc1c2423783e86"
+    },
+    {
+      "name":"validator3",
+      "ip":"172.16.239.13",
+      "type":"validator",
+      "roles":["validator"],
+      "networks": [
+        "quorum-dev-quickstart"
+      ],
+      "publicKey":"771a5ab45bba6b04c2a3d43e9fff4de773ee5b91fcb871a42956aedd9233303a1cdb54dcf1412532b93b5b8d0c72d2ae518581ee8b7f7f987a5291a19582265d"
+    },
+    {
+      "name":"validator4",
+      "ip":"172.16.239.14",
+      "type":"validator",
+      "roles":["validator"],
+      "networks": [
+        "quorum-dev-quickstart"
+      ],
+      "publicKey":"c001bf00febb63965aaf6678730d8261bb64ff73f8cfa0b92ca8f990fe0b02a64685f7b00456c7a4cc892c57f187ed80e05f1a616242a15b1e2417d023589126"
+    }
+ ]
+}

@@ -1,0 +1,388 @@
+{%- macro besuNodes(nodeConfig, privacyNodePort) %}
+{% set bootnode = nodeConfig | firstByAttr('boot', true) %}
+{% set memberPort = 20000 %}
+{% set rpcPort = 8545 %}
+{% set besuNodes = nodeConfig | byNotAttr('type', 'privacynode') | byNotAttr('type', 'privacynode-proxy') | byNotAttr('type', 'firewall') %}
+{% for node in besuNodes %}
+{% set isValidator = 'validator' == node.roles | firstByValue('validator') %}
+{% set isMember = 'member' == node.roles | firstByValue('member') %}
+{% set isRPC = 'rpc' == node.roles | firstByValue('rpc') %}
+{%- set privacynode = nodeConfig | firstByAttr('name', node.privacynode) %}
+{% if isValidator or isMember or isRPC %}
+{% if isMember %}
+{% set memberNum = node.name | getNum() %}
+  {{ node.name}}{{- memberSuffix}}:
+{% else %}
+  {{ node.name}}:
+{% endif %}
+    restart: "on-failure"
+    image: hyperledger/besu:${BESU_VERSION:-latest}
+    env_file:
+      - ./config/besu/.env    
+    entrypoint:
+      - /bin/bash
+      - -c
+      - |
+{% if node.boot %}
+        /opt/besu/bin/besu public-key export --to=/tmp/bootnode_pubkey;
+{% elif not enableStaticNodes %}
+        while [ ! -f "/opt/besu/public-keys/bootnode_pubkey" ]; do sleep 5; done ;
+{% endif %}
+        /opt/besu/bin/besu \
+        --config-file=/config/config.toml \
+        --p2p-host=$$(hostname -i) \
+        --genesis-file=/config/genesis.json \
+        --node-private-key-file=/opt/besu/keys/key \
+{%- if privacy and isMember %}
+        --privacy-enabled \
+        --privacy-onchain-groups-enabled={{- privacyOnchainGroupsEnabled}} \
+{%- if multiTenant %}
+        --privacy-multi-tenancy-enabled \
+        --rpc-http-authentication-enabled \
+        --rpc-http-authentication-credentials-file=/opt/besu/keys/auth.toml \
+        --privacy-url=http://{{- privacynode.name}}:{{privacyNodePort}} \
+{%- else %}
+        --privacy-public-key-file=/config/{{privacynode.type}}/{{privacynode.type}}.pub \
+        --privacy-url=http://{{- node.name}}{{privacynode.type}}:{{privacyNodePort}} \
+{%- endif %}
+{%- endif %}
+{%- if p2pSSL %}
+        --Xp2p-tls-enabled \
+        --Xp2p-tls-keystore-type=JKS \
+        --Xp2p-tls-keystore-file=/opt/besu/p2p-tls/keystore.jks \
+        --Xp2p-tls-keystore-password-file=/opt/besu/p2p-tls/nsspin.txt \
+        --Xp2p-tls-truststore-type=JKS \
+        --Xp2p-tls-truststore-file=/opt/besu/p2p-tls/truststore.jks \
+        --Xp2p-tls-truststore-password-file=/opt/besu/p2p-tls/nsspin.txt \
+{%- endif %}
+{%- if validatorPKI and isValidator%}
+        --Xpki-block-creation-enabled=true \
+        --Xpki-block-creation-keystore-type=PKCS12 \
+        --Xpki-block-creation-keystore-file=/opt/besu/validator-pki/keystore \
+        --Xpki-block-creation-keystore-password-file=/opt/besu/validator-pki/keystorepwd.txt \
+        --Xpki-block-creation-keystore-certificate-alias=validator \
+        --Xpki-block-creation-truststore-type=PKCS12 \
+        --Xpki-block-creation-truststore-file=/opt/besu/validator-pki/truststore \
+        --Xpki-block-creation-truststore-password-file=/opt/besu/validator-pki/keystorepwd.txt \
+        --Xpki-block-creation-crl-file=/opt/besu/validator-pki/validator.crl \
+{%- endif %}
+        --rpc-http-api=EEA,WEB3,ETH,NET,{% if privacy %}PRIV,{% endif %}PERM,{{- besuConsApi}} \
+        --rpc-ws-api=EEA,WEB3,ETH,NET,{% if privacy %}PRIV,{% endif %}PERM,{{- besuConsApi}} ;
+    volumes:
+{% if node.boot %}
+      - public-keys:/tmp/
+{% else %}
+      - public-keys:/opt/besu/public-keys/
+{% endif %}
+      - ./config/besu/config.toml:/config/config.toml
+{% if enableNodePermissions %}
+      - ./config/besu/permissions_config.toml:/config/permissions_config.toml
+{% endif %}
+      - ./config/besu/log-config.xml:/config/log-config.xml
+{% if "splunk" == monitoring %}
+      - ./config/besu/log-config-splunk.xml:/config/log-config-splunk.xml
+{% endif %}
+      - ./logs/besu:/tmp/besu
+      - ./config/besu/{{- besuConsAlgo}}Genesis.json:/config/genesis.json
+      - ./config/besu/{{- besuNetworkFiles}}/{{- node.name}}/keys:/opt/besu/keys
+{% if privacy and isMember %}
+      - ./config/{{privacynode.type}}/networkFiles/{{privacynode.name}}/nodeKey.pub:/config/{{privacynode.type}}/{{privacynode.type}}.pub
+{% endif %}
+{% if p2pSSL %}
+{% if privacy and isMember %}
+      - ./config/besu/{{- p2pTLSFiles}}/{{- node.name}}{{- memberSuffix}}:/opt/besu/p2p-tls
+{% else %}
+      - ./config/besu/{{- p2pTLSFiles}}/{{- node.name}}:/opt/besu/p2p-tls
+{% endif %}
+{% endif %}
+{% if validatorPKI and isValidator %}
+{% if privacy and isMember %}
+      - ./config/besu/validator-pki/{{- node.name}}{{- memberSuffix}}:/opt/besu/validator-pki
+{% else %}
+      - ./config/besu/validator-pki/{{- node.name}}:/opt/besu/validator-pki
+{% endif %}
+{% endif %}
+{% if enableStaticNodes %}
+      - ./config/besu/static-nodes.json:/config/static-nodes.json
+{% endif %}
+{% if (isMember and privacy) or (bootnode and node.name != bootnode.name) %}
+    depends_on:
+{% if isMember and privacy %}
+{%- if multiTenant %}
+      - {{ privacynode.name}}
+{%- else %}
+      - {{ node.name}}{{privacynode.type}}
+{% endif %}
+{% endif %}
+{% if bootnode and node.name != bootnode.name %}
+      - {{ bootnode.name}}
+{% endif %}
+{% endif %}
+{% if isRPC or isMember %}
+    ports:
+{% if isRPC %}
+      - {{rpcPort}}:8545/tcp
+      - {{rpcPort+1}}:8546/tcp
+      - {{rpcPort+2}}:8547/tcp
+{% set rpcPort = rpcPort + 3 %}
+{% endif %}
+{% if isMember %}
+      - {{memberPort}}:8545/tcp
+      - {{memberPort+1}}:8546/tcp
+      - {{memberPort+2}}:8547/tcp
+{% set memberPort = memberPort + 3 %}
+{% endif %}
+{% endif %}
+    networks:
+{% for network in node.networks %}
+      {{network}}:
+{%- if not enableDNS %}
+        ipv4_address: {{ node.ip}}
+{%- endif %}
+{% endfor %}
+
+{% if isMember and privacy %}
+{% call privacyNode(nodeConfig, node, privacynode, multiTenant, memberNum) %}
+{% endcall %}
+{% endif %}
+
+{% endif %}
+{% endfor %}
+{% endmacro %}
+
+{%- macro proxies(nodeConfig) %}
+{% set proxies = nodeConfig | byAttr('type', 'privacynode-proxy') %}
+{% set statsPort = 13037 %}
+{% for node in proxies %}
+  {{ node.name}}:
+    restart: "on-failure"
+    image: haproxy:${HAPROXY_VERSION:-latest}
+    volumes:
+      - ./config/haproxy/{{node.name}}.cfg:/usr/local/etc/haproxy/haproxy.cfg
+    ports:
+      - {{statsPort}}:12037
+{% set statsPort = statsPort + 1 %}
+    networks:
+{% for network in node.networks %}
+      {{network}}:
+{% endfor %}
+{% endfor %}
+{% endmacro %}
+
+{%- macro firewalls(nodeConfig) %}
+{% set firewalls = nodeConfig | byAttr('type', 'firewall') %}
+{% set statsPort = 12037 %}
+{% set firewallPort = 20000 %}
+{% for node in firewalls %}
+  {{ node.name}}:
+    restart: "on-failure"
+    image: haproxy:${HAPROXY_VERSION:-latest}
+    volumes:
+      - ./config/haproxy/{{node.name}}.cfg:/usr/local/etc/haproxy/haproxy.cfg
+    ports:
+      - {{statsPort}}:12037
+      - {{firewallPort}}:20000
+{% set statsPort = statsPort + 1 %}
+{% set firewallPort = firewallPort + 1 %}
+    networks:
+{% for network in node.networks %}
+      {{network}}:
+{% endfor %}
+{% endfor %}
+{% endmacro %}
+
+{%- macro haproxyPrivacyNode(nodeConfig) %}
+{% set nodes = nodeConfig | byAttr('type', 'privacynode-proxy') %}
+{% set privacyPort = 8081 %}
+{% for node in nodes %}
+{% set nodeName = node.name | replace('firewall', 'privacynode') %}
+listen {{nodeName}}
+    bind *:{{privacyPort}}
+{% set privacyPort = privacyPort + 1 %}
+    mode http
+    server {{nodeName}} {{node.name}}:8080 verify required check port 8080
+{% endfor %}
+{% endmacro %}
+
+{%- macro haproxyFirewall(nodeConfig, network) %}
+{% set firewalls = nodeConfig | byAttr('type', 'firewall') %}
+{% set firewallPort = 8081 %}
+{% for firewall in firewalls %}
+{% set nodeName = firewall.name | replace('firewall', 'privacynode') %}
+listen {{nodeName}}
+    bind *:{{firewallPort}}
+{% set firewallPort = firewallPort + 1 %}
+    mode http
+    server {{nodeName}} {{firewall.name}}:8080 verify required check port 8080
+{% endfor %}
+{% endmacro %}
+
+
+{%- macro privacyNode(nodeConfig, node, privacynode, multiTenant, memberNum) %}
+{%- if "orion" == privacynode.type %}
+{% call orionNode(nodeConfig, node, privacynode, multiTenant, memberNum) %}
+{% endcall %} 
+{%- else %}
+{% call tesseraNode(nodeConfig, node, privacynode, multiTenant, memberNum) %}
+{% endcall %} 
+{%- endif %}
+{% endmacro %}
+
+
+{%- macro tesseraNode(nodeConfig, node, privacynode, multiTenant, memberNum) %}
+{% set privacyNodes = nodeConfig | byAttr('type', 'tessera') %}
+{% set otherNodes = nodeConfig | byArr(privacyNodes, 'privacynode', 'name') %}
+
+  {{ node.name}}tessera:
+    image: quorumengineering/tessera:${QUORUM_TESSERA_VERSION:-21.1.1}
+    expose:
+      - 9000
+      - 9080
+      - 9101
+    restart: "no"
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "--proxy", "off", "http://localhost:9000/upcheck"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+      start_period: 5s
+    entrypoint:
+      - /bin/sh
+      - -c
+      - |
+        mkdir -p /var/log/tessera/;
+        mkdir -p /data/tm/;
+        cp /config/keys/tm.* /data/tm/ ;
+          cat <<EOF > /data/tm/tessera-config-09.json
+          {
+            "mode": "orion",
+            "useWhiteList": false,
+            "jdbc": {
+              "username": "sa",
+              "password": "",
+              "url": "jdbc:h2:./data/tm/db;MODE=Oracle;TRACE_LEVEL_SYSTEM_OUT=0",
+              "autoCreateTables": true
+            },
+            "serverConfigs":[
+            {
+              "app":"ThirdParty",
+              "enabled": true,
+              "serverAddress": "http://$$(hostname -i):9080",
+              "communicationType" : "REST"
+            },
+            {
+              "app":"Q2T",
+              "enabled": true,
+              "serverAddress": "http://$$(hostname -i):9101",
+              "sslConfig": {
+                "tls": "OFF"
+              },
+              "communicationType" : "REST"
+            },
+            {
+              "app":"P2P",
+              "enabled": true,
+              "serverAddress": "http://$$(hostname -i):9000",
+              "sslConfig": {
+                "tls": "OFF"
+              },
+              "communicationType" : "REST"
+            }
+            ],
+            "peer": [
+{% for pNode in otherNodes %}
+                {
+                    "url": "http://{{pNode.name}}tessera:9000"
+                }{{',' if not loop.last}}
+{% endfor %}
+            ],
+            "keys": {
+              "passwords": [],
+              "keyData": [
+                {
+                  "config": $$(cat /data/tm/tm.key),
+                  "publicKey": "$$(cat /data/tm/tm.pub)"
+                }
+              ]
+            },
+            "alwaysSendTo": []
+          }
+        EOF
+          cat /data/tm/tessera-config-09.json
+          /tessera/bin/tessera -configfile /data/tm/tessera-config-09.json &> /var/log/tessera/tessera-$$HOSTNAME.log | tee -a /var/log/tessera/tessera-$$HOSTNAME.log
+    ports:
+      - 908{{memberNum}}:9080
+    environment:
+      - TESSERA_CONFIG_TYPE="-09"
+    volumes:
+      - ./config/tessera/networkFiles/{{privacynode.name}}:/config/keys
+      - {{node.name}}tessera:/data
+      - ./logs/tessera:/var/log/tessera/      
+    networks:
+{% for network in privacynode.networks %}
+      {{network}}:
+{% if not enableDNS %}
+        ipv4_address: {{ privacynode.ip}}
+{% endif %}
+{% endfor %}
+
+
+
+{% endmacro %}
+
+{%- macro orionNode(nodeConfig, node, privacynode, multiTenant, memberNum) %}
+
+{%- if multiTenant %}
+{%- if "1" == memberNum %}
+  {{ privacynode.name}}:
+    image: consensys/quorum-orion:${QUORUM_ORION_VERSION:-latest}
+    command: ["/config/orion.conf"]
+    environment:
+      - ORION_NODEURL=http://{{- privacynode.name}}:8080
+      - ORION_CLIENTURL=http://{{- privacynode.name}}:{{privacyNodePort}}
+    env_file:
+      - ./config/besu/.env    
+    volumes:
+      - ./config/orion/orion.conf:/config/orion.conf
+      - ./config/orion/networkFiles:/keys/
+      - ./logs/orion:/tmp/orion
+      - ./config/orion/log-config.xml:/config/log-config.xml
+    networks:
+{% for network in privacynode.networks %}
+      {{network}}:
+{% if not enableDNS %}
+        ipv4_address: {{ privacynode.ip}}
+{% endif %}
+{% endfor %}
+{%- endif %}
+{%- else %}
+{% set otherPrivacyNodes = nodeConfig | byAttr('type', 'orion') | byNotAttr('name', privacynode.name) %}
+{% if otherPrivacyNodes %}
+{% set otherNodes = nodeConfig | byArr(otherPrivacyNodes, 'privacynode', 'name') %}
+  {{ node.name}}orion:
+    image: consensys/quorum-orion:${QUORUM_ORION_VERSION:-latest}
+    command: ["/config/orion.conf"]
+    environment:
+{%- if 0 < otherNodes | length %}    
+      - ORION_OTHERNODES={% for otherOrion in otherNodes %}http://{{- otherOrion.name}}orion:8080/{{',' if not loop.last}}{% endfor %}
+{%- endif %}
+      - ORION_NODEURL=http://{{- node.name}}orion:8080
+      - ORION_CLIENTURL=http://{{- node.name}}orion:{{privacyNodePort}}
+    env_file:
+      - ./config/besu/.env    
+    volumes:
+      - ./config/orion/orion.conf:/config/orion.conf
+      - ./config/orion/networkFiles/{{- privacynode.name}}:/keys/
+      - ./logs/orion:/tmp/orion
+      - ./config/orion/log-config.xml:/config/log-config.xml
+    networks:
+{% for network in privacynode.networks %}
+      {{network}}:
+{% if not enableDNS %}
+        ipv4_address: {{ privacynode.ip}}
+{% endif %}
+{% endfor %}
+{% endif %}
+{%- endif %}
+
+{% endmacro %}

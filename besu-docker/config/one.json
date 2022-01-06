@@ -1,0 +1,34 @@
+{
+  "clientType": "besu",
+  "orchestrate": false,
+  "privacy": false,
+  "p2pSSL": false,
+  "monitoring": "none",
+  "enableStaticNodes": false,
+  "enableBootNodes": false,
+  "enableETHSignerProxy": false,
+  "enableP2PDiscovery": false,
+  "enableNodePermissions": false,
+  "enableDNS": false,
+  "besuConsAlgo": "miner",
+  "besuConsApi": "MINER",
+  "enableMiner": true,
+  "minerCoinbase": "fe3b557e8fb62b89f4916b721be55ceb828dbd73",
+  "minGasPrice": 0,
+  "privacyOnchainGroupsEnabled": false,
+  "metrics": false,
+  "defaultNetwork": "quorum-dev-quickstart",
+  "nodeConfig": [
+    {
+      "name":"member1",
+      "ip":"172.16.239.16",
+      "type":"member",
+      "roles": ["validator", "member", "rpc"],
+      "boot": true,
+      "networks": [
+        "quorum-dev-quickstart"
+      ],
+      "publicKey":"09b02f8a5fddd222ade4ea4528faefc399623af3f736be3c44f03e2df22fb792f3931a4d9573d333ca74343305762a753388c3422a86d98b713fc91c1ea04842"
+    }
+  ]
+}

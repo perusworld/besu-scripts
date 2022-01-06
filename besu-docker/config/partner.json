@@ -1,0 +1,63 @@
+{
+  "clientType": "besu",
+  "orchestrate": false,
+  "privacy": true,
+  "monitoring": "none",
+  "enableStaticNodes": true,
+  "enableBootNodes": false,
+  "enableETHSignerProxy": false,
+  "enableP2PDiscovery": false,
+  "enableNodePermissions": false,
+  "enableDNS": true,
+  "besuConsAlgo": "miner",
+  "besuConsApi": "MINER",
+  "enableMiner": true,
+  "minerCoinbase": "fe3b557e8fb62b89f4916b721be55ceb828dbd73",
+  "minGasPrice": 0,
+  "privacyOnchainGroupsEnabled": false,
+  "metrics": false,
+  "defaultNetwork": "partnera_blockchain_network",
+  "nodeConfig": [
+    {
+      "name": "partnera-member1",
+      "ip": "172.16.239.16",
+      "type": "member",
+      "roles": [
+        "validator",
+        "member",
+        "rpc"
+      ],
+      "boot": false,
+      "networks": [
+        "partnera_blockchain_network"
+      ],
+      "publicKey": "09b02f8a5fddd222ade4ea4528faefc399623af3f736be3c44f03e2df22fb792f3931a4d9573d333ca74343305762a753388c3422a86d98b713fc91c1ea04842",
+      "privacynode": "partnera-orion1"
+    },
+    {
+      "name": "partnera-orion1",
+      "ip": "172.16.239.26",
+      "type": "orion",
+      "networks": [
+        "partnera_blockchain_network",
+        "orion_network"
+      ]
+    },
+    {
+      "name": "orion-dns-proxy",
+      "type": "privacynode-proxy",
+      "networks": [
+        "internet_network",
+        "orion_network"
+      ]
+    },
+    {
+      "name": "partnera-firewall",
+      "type": "firewall",
+      "networks": [
+        "internet_network",
+        "partnera_blockchain_network"
+      ]
+    }
+  ]
+}
