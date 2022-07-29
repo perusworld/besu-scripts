@@ -41,6 +41,8 @@ npm run build && npm start -- --configFile=./config/four-r1-tls.json
 npm run build && npm start -- --configFile=./config/small-p2p-tls-tessera-r1.json
 
 npm run build && npm start -- --configFile=./config/small-p2p-tls-tessera-r1-t.json
+
+npm run build && npm start -- --configFile=./config/one.json
 ```
 
 **To start services and the network:**
