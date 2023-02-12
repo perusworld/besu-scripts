@@ -37,7 +37,7 @@
     "cli-spinners": "^2.4.0",
     "express": "^4.17.1",
     "express-session": "^1.17.1",
-    "got": "^11.8.5",
+    "got": "^12.5.3",
     "isbinaryfile": "^4.0.6",
     "keycloak-connect": "^11.0.0",
     "log-update": "^4.0.0",
