@@ -15,7 +15,7 @@
         "express-session": "^1.17.1",
         "got": "^11.8.5",
         "isbinaryfile": "^4.0.6",
-        "keycloak-connect": "^11.0.0",
+        "keycloak-connect": "^21.0.1",
         "log-update": "^4.0.0",
         "nunjucks": "^3.2.4",
         "open": "^7.1.0",
@@ -3102,14 +3102,14 @@
       }
     },
     "node_modules/keycloak-connect": {
-      "version": "11.0.3",
-      "resolved": "https://registry.npmjs.org/keycloak-connect/-/keycloak-connect-11.0.3.tgz",
-      "integrity": "sha512-VVmdiRFXRJmik1Py/cGplySsVeGcLjGpoYoC4VW5b9meCcVTN4jFAokYup7Nkba6L9SM+NNQD6brlG5DZeHiWg==",
+      "version": "21.0.1",
+      "resolved": "https://registry.npmjs.org/keycloak-connect/-/keycloak-connect-21.0.1.tgz",
+      "integrity": "sha512-jCLX1sYQpMb2TYK4H1gd2XOwMLXyzMd+ict+Z7295JtFs7GZ0kfBOT7St/RY/3xjen/zd2bHBlnuUBJVZZrciQ==",
       "dependencies": {
         "jwk-to-pem": "^2.0.0"
       },
       "engines": {
-        "node": ">=4.6.2"
+        "node": ">=14"
       },
       "optionalDependencies": {
         "chromedriver": "latest"
@@ -7424,9 +7424,9 @@
       }
     },
     "keycloak-connect": {
-      "version": "11.0.3",
-      "resolved": "https://registry.npmjs.org/keycloak-connect/-/keycloak-connect-11.0.3.tgz",
-      "integrity": "sha512-VVmdiRFXRJmik1Py/cGplySsVeGcLjGpoYoC4VW5b9meCcVTN4jFAokYup7Nkba6L9SM+NNQD6brlG5DZeHiWg==",
+      "version": "21.0.1",
+      "resolved": "https://registry.npmjs.org/keycloak-connect/-/keycloak-connect-21.0.1.tgz",
+      "integrity": "sha512-jCLX1sYQpMb2TYK4H1gd2XOwMLXyzMd+ict+Z7295JtFs7GZ0kfBOT7St/RY/3xjen/zd2bHBlnuUBJVZZrciQ==",
       "requires": {
         "chromedriver": "latest",
         "jwk-to-pem": "^2.0.0"
